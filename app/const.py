@@ -9,8 +9,10 @@ LOGGER: logging.Logger = logging.getLogger(__name__)
 # Will retrieve voice list from tts.speech.microsoft.com/cognitiveservices/voices/list in the future
 # TODO: Split voices by language
 AZURE_HD_VOICES = {
-    "Ada": "en-GB-AdaNeural",
+    "Ada": "en-GB-AdaMultilingualNeural",
     "Ryan": "en-GB-RyanNeural",
+    "Ollie": "en-GB-OllieMultilingualNeural",
+    "Libby": "en-GB-LibbyNeural",
     "Alloy": "en-US-Alloy:DragonHDLatestNeural",
     "Adam": "en-US-Adam:DragonHDLatestNeural",
     "Andrew": "en-US-Andrew3:DragonHDLatestNeural",

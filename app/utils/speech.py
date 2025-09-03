@@ -12,27 +12,56 @@ from utils.identity import get_speech_token
 def text_to_speech(ssml) -> bytes:
     """Use Azure Speech Service and convert SSML to audio bytes."""
 
-    if os.getenv("AZURE_SPEECH_KEY"):
-        speech_config = speechsdk.SpeechConfig(
-            subscription=os.environ["AZURE_SPEECH_KEY"],
-            region=os.environ["AZURE_SPEECH_REGION"],
+    try:
+        if os.getenv("AZURE_SPEECH_KEY"):
+            LOGGER.info("Using Azure Speech Key authentication")
+            speech_config = speechsdk.SpeechConfig(
+                subscription=os.environ["AZURE_SPEECH_KEY"],
+                region=os.environ["AZURE_SPEECH_REGION"],
+            )
+        else:
+            LOGGER.info("Using Azure Speech Resource ID authentication")
+            resource_id = os.environ["AZURE_SPEECH_RESOURCE_ID"]
+            region = os.environ["AZURE_SPEECH_REGION"]
+            custom_endpoint = os.environ.get("AZURE_SPEECH_CUSTOM_ENDPOINT")
+            
+            LOGGER.info(f"Speech resource ID: {resource_id}")
+            LOGGER.info(f"Speech region: {region}")
+            if custom_endpoint:
+                LOGGER.info(f"Speech custom endpoint: {custom_endpoint}")
+            else:
+                LOGGER.info("No custom endpoint specified")
+            
+            try:
+                auth_token = get_speech_token(resource_id, custom_endpoint)
+                speech_config = speechsdk.SpeechConfig(
+                    auth_token=auth_token,
+                    region=region,
+                )
+            except ValueError as e:
+                LOGGER.error(f"Invalid speech resource configuration: {str(e)}")
+                raise Exception(f"Speech service configuration error: {str(e)}")
+            except Exception as e:
+                LOGGER.error(f"Failed to authenticate with speech service: {str(e)}")
+                raise Exception(f"Speech service authentication failed: {str(e)}")
+
+        audio_config = None  # enable in-memory audio stream
+
+        speech_config.set_speech_synthesis_output_format(
+            speechsdk.SpeechSynthesisOutputFormat.Riff48Khz16BitMonoPcm
         )
-    else:
-        speech_config = speechsdk.SpeechConfig(
-            auth_token=get_speech_token(os.environ["AZURE_SPEECH_RESOURCE_ID"]),
-            region=os.environ["AZURE_SPEECH_REGION"],
+
+        # Creates a speech synthesizer using the Azure Speech Service.
+        speech_synthesizer = speechsdk.SpeechSynthesizer(
+            speech_config=speech_config, audio_config=audio_config
         )
-
-    audio_config = None  # enable in-memory audio stream
-
-    speech_config.set_speech_synthesis_output_format(
-        speechsdk.SpeechSynthesisOutputFormat.Riff48Khz16BitMonoPcm
-    )
-
-    # Creates a speech synthesizer using the Azure Speech Service.
-    speech_synthesizer = speechsdk.SpeechSynthesizer(
-        speech_config=speech_config, audio_config=audio_config
-    )
+        
+    except KeyError as e:
+        LOGGER.error(f"Missing required environment variable: {str(e)}")
+        raise Exception(f"Configuration error: Missing environment variable {str(e)}")
+    except Exception as e:
+        LOGGER.error(f"Failed to configure speech service: {str(e)}")
+        raise
 
     # Synthesizes the received text to speech.
     result = speech_synthesizer.speak_ssml_async(ssml).get()

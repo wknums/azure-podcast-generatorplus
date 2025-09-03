@@ -13,7 +13,7 @@ from utils.identity import get_token_provider
 AZURE_OPENAI_API_VERSION = "2024-10-21"
 
 PROMPT = """
-Create a highly engaging podcast script between two people based on the input text. Use informal language to enhance the human-like quality of the conversation, including expressions like \"wow,\", and pauses such as \"uhm.\"
+Create a highly engaging podcast script between two people based on the input text. Use informal language common to the United Kingdom to enhance the human-like quality of the conversation, including expressions like \"wow,\", and pauses such as \"uhm.\"
 
 # Steps
 
@@ -64,7 +64,7 @@ JSON_SCHEMA = {
                 "properties": {
                     "language": {
                         "type": "string",
-                        "description": "Language code + locale (BCP-47), e.g. en-US or es-PA",
+                        "description": "Language code + locale (BCP-47), e.g. en-UK, en-US or es-PA",
                     }
                 },
                 "required": ["language"],

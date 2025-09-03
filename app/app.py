@@ -69,8 +69,8 @@ with form_container.expander("Advanced options", expanded=False):
     voice_1 = col1.selectbox(
         "Voice 1",
         options=list(AZURE_HD_VOICES.keys()),
-        index=list(AZURE_HD_VOICES.keys()).index("Andrew")
-        if "Andrew" in AZURE_HD_VOICES
+        index=list(AZURE_HD_VOICES.keys()).index("Ryan")
+        if "Ryan" in AZURE_HD_VOICES
         else 0,
     )
 
@@ -78,8 +78,8 @@ with form_container.expander("Advanced options", expanded=False):
     voice_2 = col2.selectbox(
         "Voice 2",
         options=list(AZURE_HD_VOICES.keys()),
-        index=list(AZURE_HD_VOICES.keys()).index("Ava")
-        if "Ava" in AZURE_HD_VOICES
+        index=list(AZURE_HD_VOICES.keys()).index("Ada")
+        if "Ada" in AZURE_HD_VOICES
         else 1,
     )
 
